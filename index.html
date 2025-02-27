@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Socket.IO Chat</title>
+  <style>
+    /* Add some basic styling */
+    body {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      margin: 0;
+      font-family: Arial, sans-serif;
+    }
+    ul {
+      list-style-type: none;
+      padding: 10px;
+      flex: 1;
+      overflow-y: auto;
+      margin: 0;
+    }
+    li {
+      padding: 8px;
+      margin-bottom: 10px;
+      border-radius: 4px;
+      max-width: 60%;
+    }
+    .user-message {
+      background-color: #d1e7dd;
+      margin-left: auto;
+      text-align: right;
+    }
+    .other-message {
+      background-color: #f2f2f2;
+      margin-right: auto;
+      text-align: left;
+    }
+    form {
+      display: flex;
+      padding: 10px;
+      background-color: #fff;
+      border-top: 1px solid #ccc;
+    }
+    input {
+      padding: 10px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      flex: 1;
+    }
+    button {
+      padding: 10px;
+      margin-left: 10px;
+      border-radius: 4px;
+      border: none;
+      background-color: #007bff;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <ul id="messages"></ul>
+  <form id="form" action="">
+    <input id="input" autocomplete="off" /><button>Send</button>
+  </form>
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    var socket = io();
+    var form = document.getElementById('form');
+    var input = document.getElementById('input');
+    var username = prompt('enter your name'); // Change this to a dynamic username if needed
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      if (input.value) {
+        socket.emit('chat message', { msg: input.value, user: username });
+        input.value = ''; // Clear the input without adding the message
+      }
+    });
+
+    socket.on('chat message', function (data) {
+      var item = document.createElement('li');
+      item.textContent = data.msg;
+      item.className = data.user === username ? 'user-message' : 'other-message'; // Differentiate messages
+      document.getElementById('messages').appendChild(item);
+      window.scrollTo(0, document.body.scrollHeight);
+    });
+  </script>
+</body>
+</html>
